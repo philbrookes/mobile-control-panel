@@ -1,0 +1,132 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  
+  <div class="middle-section">
+    <div class="middle-container">
+
+      <div class="middle-header header-toolbar">
+        <nav class="navbar navbar-default navbar-pf" role="navigation">
+          <div class="collapse navbar-collapse navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-primary">
+              <li>
+                <a href="project/{{project.metadata.name}}/mobile">Mobile Overview</a>
+              </li>
+              <li class="active">
+                <a ng-href="project/{{project.metadata.name}}/browse/mobileapps">Apps</a>
+              </li>
+              <li>
+                <a href="#">Data Storage</a>
+              </li>
+              <li>
+                <a href="#">Push Notifications</a>
+              </li>
+              <li>
+                <a href="#">Security</a>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Other Services
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#">Remote Debugging</a>
+                  </li>
+                  <li>
+                    <a href="#">Key-Value Storage</a>
+                  </li>
+                  <li>
+                    <a href="#">Fuse Integration</a>
+                  </li>
+                  <li>
+                    <a href="#">Messaging Integration</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="middle-content">
+        <div class="container-fluid">
+          <breadcrumbs breadcrumbs="breadcrumbs"></breadcrumbs>
+          <alerts alerts="alerts"></alerts>
+          <div ng-if="!loaded" class="mar-top-xl">Loading...</div>
+          <div ng-if="mobileapp">
+            <h1 class="contains-actions">
+              <div class="pull-right dropdown" ng-hide="!('mobileapps' | canIDoAny)">
+                <button type="button" class="dropdown-toggle btn btn-default actions-dropdown-btn hidden-xs" data-toggle="dropdown">
+                  Actions
+                  <span class="caret"></span>
+                </button>
+                <a href=""
+                   class="dropdown-toggle actions-dropdown-kebab visible-xs-inline"
+                   data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i><span class="sr-only">Actions</span></a>
+                <ul class="dropdown-menu dropdown-menu-right actions action-button">
+                  <li ng-if="'routes' | canI : 'create'">
+                    <a ng-href="project/{{project.metadata.name}}/create-route?mobileapp={{mobileapp.metadata.name}}"
+                       role="button">Create Route</a>
+                  </li>
+                  <li ng-if="'mobileapps' | canI : 'update'">
+                    <a ng-href="{{mobileapp | editYamlURL}}" role="button">Edit YAML</a>
+                  </li>
+                  <li ng-if="'mobileapps' | canI : 'delete'">
+                    <delete-link
+                      kind="Mobileapp"
+                      resource-name="{{mobileapp.metadata.name}}"
+                      project-name="{{mobileapp.metadata.namespace}}"
+                      alerts="alerts">
+                    </delete-link>
+                  </li>
+                </ul>
+              </div>
+              {{mobileapp.metadata.name}}
+              <small class="meta">created <span am-time-ago="mobileapp.metadata.creationTimestamp"></span></small>
+            </h1>
+            <labels labels="mobileapp.metadata.labels" clickable="true" kind="mobileapps" project-name="{{mobileapp.metadata.namespace}}" limit="3"></labels>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row" ng-if="mobileapp">
+            <div class="col-md-12">
+              <uib-tabset>
+                <uib-tab active="selectedTab.integrate">
+                  <uib-tab-heading>Integrate</uib-tab-heading>
+                  <div class="resource-integrate">
+                    <h2>Sync SDK Integration</h2>
+                    <p>To start with an example Sync app, clone/fork the repo at <a href="https://github.com/feedhenry-templates/sync-cordova-app">https://github.com/feedhenry-templates/sync-cordova-app</a>. If you already have an App, you can integrate Sync into it.</p>
+                    <p>Start by downloading the <a href="#">sync-config.json</a> file and placing it in !!SOME FOLDER!!. Or alternatively, copy and paste the below config into !!SOME FILE!!</p>
+                    <pre>{{syncconfig}}</pre>
+                    <p>Add the Sync SDK to the App. This example is using npm for dependencies</p>
+                    <pre>npm install --save fh-sync-js@latest</pre>
+                    <p>Load the SDK config file &amp; initialise the Sync SDK. This example is using AngularJS</p>
+                    <pre>angular
+  .constant('fhSync', require('fh-sync-js'))
+  .constant('fhSyncConfig', require('../../sync-config.json'))
+
+fhSync.init(fhSyncConfig);</pre>
+                   <p>For info on how to use the Sync SDK, see the example app at <a href="https://github.com/feedhenry-templates/sync-cordova-app">https://github.com/feedhenry-templates/sync-cordova-app</a> or the Sync Documentation at <a href="http://feedhenry.org/docs/">http://feedhenry.org/docs/</a></p>
+                  </div>
+                </uib-tab>
+                <uib-tab active="selectedTab.details">
+                  <uib-tab-heading>Details</uib-tab-heading>
+                  <div class="resource-details">
+                    <dl class="dl-horizontal left">
+
+                      <dt>Client Type:</dt>
+                      <dd>{{mobileapp.spec.clientType}}</dd>
+                    </dl>
+                    <annotations annotations="mobileapps.metadata.annotations"></annotations>
+                  </div>
+                </uib-tab>
+                <uib-tab active="selectedTab.events" ng-if="'events' | canI : 'watch'">
+                  <uib-tab-heading>Events</uib-tab-heading>
+                  <events api-objects="[ mobileapp ]" project-context="projectContext" ng-if="selectedTab.events"></events>
+                </uib-tab>
+              </uib-tabset>
+            </div><!-- /col-* -->
+          </div>
+        </div>
+      </div><!-- /middle-content -->
+</project-page>

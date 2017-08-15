@@ -25,12 +25,22 @@ angular
   .config(function($routeProvider) {
     $routeProvider
       .when('/project/:project/mobile', {
-        templateUrl: ' extensions/mcp/mobile.html',
+        templateUrl: 'extensions/mcp/mobile.html',
         controller: 'MobileOverviewController'
       })
       .when('/project/:project/create-mobileapp', {
         templateUrl: 'extensions/mcp/create-mobileapp.html',
         controller: 'CreateMobileappController'
+      })
+      .when('/project/:project/browse/mobileapps', {
+        templateUrl: 'extensions/mcp/mobileapps.html',
+        controller: 'MobileAppsController',
+        reloadOnSearch: false
+      })
+      .when('/project/:project/browse/mobileapps/:mobileapp', {
+        templateUrl: 'extensions/mcp/mobileapp.html',
+        controller: 'MobileAppController',
+        reloadOnSearch: false
       })
     }
   )
@@ -60,6 +70,139 @@ angular
 
       }));
    }])
+   .controller('MobileAppsController', ['$scope', '$routeParams', 'DataService', 'ProjectsService', '$filter', function($scope, $routeParams, DataService, ProjectsService, $filter) {
+      $scope.projectName = $routeParams.project;
+      $scope.mobileapp = null;
+      $scope.mobileapps = null;
+      $scope.alerts = {};
+      $scope.renderOptions = $scope.renderOptions || {};
+      $scope.renderOptions.hideFilterWidget = true;
+      $scope.breadcrumbs = [
+        {
+          title: "Mobile Apps",
+          link: "project/" + $routeParams.project + "/browse/mobileapps"
+        },
+        {
+          title: $routeParams.mobileapp
+        }
+      ];
+
+      var watches = [];
+
+      var mobileappResolved = function(mobileapp, action) {
+        $scope.loaded = true;
+        $scope.mobileapp = mobileapp;
+
+        if (action === "DELETED") {
+          $scope.alerts["deleted"] = {
+            type: "warning",
+            message: "This mobile app has been deleted."
+          };
+        }
+      };
+      var resource = {
+        group: 'mobile.k8s.io',
+        resource: 'mobileapps'
+      };
+
+      ProjectsService
+        .get($routeParams.project)
+        .then(_.spread(function(project, context) {
+          $scope.project = project;
+          $scope.projectContext = context;
+          DataService
+            .get(resource, $routeParams.mobileapp, context, { errorNotification: false })
+            .then(function(mobileapp) {
+              mobileappResolved(mobileapp);
+              watches.push(DataService.watchObject(resource, $routeParams.mobileapp, context, mobileappResolved));
+            }, function(e) {
+              $scope.loaded = true;
+              $scope.alerts["load"] = {
+                type: "error",
+                message: "The mobile app details could not be loaded.",
+                details: $filter('getErrorDetails')(e)
+              };
+            }
+          );
+
+          watches.push(DataService.watch(resource, context, function(mobileapps) {
+            $scope.mobileapps = mobileapps.by("metadata.name");
+          }));
+
+          $scope.$on('$destroy', function(){
+            DataService.unwatchAll(watches);
+          });
+
+     }));
+   }])
+    .controller('MobileAppController', ['$scope', '$routeParams', 'DataService', 'ProjectsService', '$filter', function ($scope, $routeParams, DataService, ProjectsService, $filter) {
+      $scope.projectName = $routeParams.project;
+      $scope.mobileapp = null;
+      $scope.mobileapps = null;
+      $scope.alerts = {};
+      $scope.renderOptions = $scope.renderOptions || {};
+      $scope.renderOptions.hideFilterWidget = true;
+      $scope.breadcrumbs = [
+        {
+          title: "Mobile Apps",
+          link: "project/" + $routeParams.project + "/browse/mobileapps"
+        },
+        {
+          title: $routeParams.mobileapp
+        }
+      ];
+      $scope.syncconfig = '{\n  "TODO":"SOME CONFIG"\n}';
+
+
+      var resource = {
+        group: 'mobile.k8s.io',
+        resource: 'mobileapps'
+      };
+
+      var watches = [];
+
+      var mobileappResolved = function(mobileapp, action) {
+        $scope.loaded = true;
+        $scope.mobileapp = mobileapp;
+
+        if (action === "DELETED") {
+          $scope.alerts["deleted"] = {
+            type: "warning",
+            message: "This mobileapp has been deleted."
+          };
+        }
+      };
+
+      ProjectsService
+        .get($routeParams.project)
+        .then(_.spread(function(project, context) {
+          $scope.project = project;
+          $scope.projectContext = context;
+          DataService
+            .get(resource, $routeParams.mobileapp, context, { errorNotification: false })
+            .then(function(mobileapp) {
+              mobileappResolved(mobileapp);
+              watches.push(DataService.watchObject(resource, $routeParams.mobileapp, context, mobileappResolved));
+            }, function(e) {
+              $scope.loaded = true;
+              $scope.alerts["load"] = {
+                type: "error",
+                message: "The mobile app details could not be loaded.",
+                details: $filter('getErrorDetails')(e)
+              };
+            }
+          );
+
+          watches.push(DataService.watch(resource, context, function(mobileapps) {
+            $scope.mobileapps = mobileapps.by("metadata.name");
+          }));
+
+          $scope.$on('$destroy', function(){
+            DataService.unwatchAll(watches);
+          });
+
+      }));
+    }])
    .controller('CreateMobileappController',
                 function($filter,
                         $location,

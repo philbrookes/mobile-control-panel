@@ -9,10 +9,10 @@
           <div class="collapse navbar-collapse navbar-collapse-1">
             <ul class="nav navbar-nav navbar-primary">
               <li class="active">
-                <a href="#">Mobile Overview</a>
+                <a href="project/{{project.metadata.name}}/mobile">Mobile Overview</a>
               </li>
               <li>
-                <a href="#">Apps</a>
+                <a ng-href="project/{{project.metadata.name}}/browse/mobileapps">Apps</a>
               </li>
               <li>
                 <a href="#">Data Storage</a>
@@ -69,7 +69,7 @@
           <div class="row row-cards-pf">
             <div ng-repeat="mobileapp in mobileapps" class="col-xs-12 col-sm-6 col-md-3">
               <div class="card-pf card-pf-accented card-pf-aggregate-status">
-                <h2 class="card-pf-title">Name:{{mobileapp.metadata.name}}</h2>
+                <h3><a href="project/{{project.metadata.name}}/browse/mobileapps/{{mobileapp.metadata.name}}">{{mobileapp.metadata.name}}</a></h3>
                 <div class="card-pf-body">
                   <span class="fa ng-class:['fa-' + mobileapp.metadata.annotations['mobile.k8s.io/iconClass']]"></span>
                   <span class="">{{mobileapp.spec.clientType}}</span>

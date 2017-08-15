@@ -1,0 +1,82 @@
+<project-header class="top-header"></project-header>
+<project-page class="overview">
+  
+  <div class="middle-section">
+    <div class="middle-container">
+
+      <div class="middle-header header-toolbar">
+        <nav class="navbar navbar-default navbar-pf" role="navigation">
+          <div class="collapse navbar-collapse navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-primary">
+              <li>
+                <a href="project/{{project.metadata.name}}/mobile">Mobile Overview</a>
+              </li>
+              <li class="active">
+                <a ng-href="project/{{project.metadata.name}}/browse/mobileapps">Apps</a>
+              </li>
+              <li>
+                <a href="#">Data Storage</a>
+              </li>
+              <li>
+                <a href="#">Push Notifications</a>
+              </li>
+              <li>
+                <a href="#">Security</a>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Other Services
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#">Remote Debugging</a>
+                  </li>
+                  <li>
+                    <a href="#">Key-Value Storage</a>
+                  </li>
+                  <li>
+                    <a href="#">Fuse Integration</a>
+                  </li>
+                  <li>
+                    <a href="#">Messaging Integration</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="middle-content">
+        <div class="container-fluid">
+          <alerts alerts="alerts"></alerts>
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-bordered table-hover table-mobile table-layout-fixed">
+                <colgroup>
+                  <col class="col-sm-3">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Age</th>
+                  </tr>
+                </thead>
+                <tbody ng-if="(mobileapps | hashSize) == 0">
+                  <tr><td colspan="6"><em>{{emptyMessage}}</em></td></tr>
+                </tbody>
+                <tbody ng-if="(mobileapps | hashSize) > 0">
+                  <tr ng-repeat="mobileapp in mobileapps | orderObjectsByDate : true">
+                    <td data-title="Name"><a href="project/{{project.metadata.name}}/browse/mobileapps/{{mobileapp.metadata.name}}">{{mobileapp.metadata.name}}</a></td>
+                    <td data-title="Type">{{mobileapp.spec.clientType}}</td>
+                    <td data-title="Age"><span am-time-ago="mobileapp.metadata.creationTimestamp" am-without-suffix="true"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div><!-- /col-* -->
+          </div>
+        </div>
+      </div><!-- /middle-content -->
+</project-page>
